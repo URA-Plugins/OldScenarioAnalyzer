@@ -17,3 +17,10 @@
 ```
 
 `historyLimit` 默认值为 `100`，有效范围为 `0` 到 `1000`。设置为 `0` 时只显示最近一次成功输出，不保存 History，也不接管方向键。
+
+## 构建
+
+```powershell
+git -c core.longpaths=true submodule update --init --recursive
+dotnet build .\OldScenarioAnalyzer.csproj -c Release -m:1 -p:RuntimeIdentifier=win-x64 -p:SelfContained=false -p:PlatformTarget=AnyCPU -p:DeployUraPluginToLocalAppDataOnBuild=false
+```
