@@ -64,7 +64,7 @@ public sealed class OldScenarioAnalyzer : IPlugin
             priority: 1);
     }
 
-    public void Dispose()
+    public ValueTask DisposeAsync()
     {
         lock (stateGate)
         {
@@ -98,6 +98,7 @@ public sealed class OldScenarioAnalyzer : IPlugin
             if (removePanel)
                 publishedWorkspace!.RemovePanel(TrainingPanelKey);
         }
+        return ValueTask.CompletedTask;
     }
 
     public async Task ConfigPromptAsync(
