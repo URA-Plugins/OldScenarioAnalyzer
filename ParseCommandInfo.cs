@@ -570,8 +570,9 @@ namespace OldScenarioAnalyzer
                         var shouldShining = false; // 是不是友情训练
                         if (partner >= 1 && partner <= 7)
                         {
+                            var supportCard = Database.Names.GetRequiredSupportCard(supportCards[partner]);
                             priority = PartnerPriority.其他;
-                            if (name.Contains("[友]")) // 友人单独标绿
+                            if (supportCard.IsFriendCard) // 友人单独标绿
                             {
                                 priority = PartnerPriority.友人;
 
@@ -602,18 +603,10 @@ namespace OldScenarioAnalyzer
                                 //在得意位置上
                                 var commandId1 = GameGlobal.ToTrainId[command.command_id];
                                 shouldShining = friendship >= 80 &&
-                                    name.Contains(commandId1 switch
-                                    {
-                                        101 => "[速]",
-                                        105 => "[耐]",
-                                        102 => "[力]",
-                                        103 => "[根]",
-                                        106 => "[智]",
-                                        _ => string.Empty
-                                    });
+                                    supportCard.Type == commandId1;
                                 //GM杯检查
                                 if (ScenarioExtensions.IsScenario(@event, ScenarioType.GrandMasters) && @event.data.venus_data_set.venus_spirit_active_effect_info_array.Any(x => x.chara_id == 9042 && x.effect_group_id == 421)
-                                    && (name.Contains("[速]") || name.Contains("[耐]") || name.Contains("[力]") || name.Contains("[根]") || name.Contains("[智]")))
+                                    && supportCard.Type is 101 or 105 or 102 or 103 or 106)
                                 {
                                     shouldShining = true;
                                 }
@@ -630,7 +623,7 @@ namespace OldScenarioAnalyzer
                             if (shouldShining)
                             {
                                 LArcShiningCount[trainIdx] += 1;
-                                if (name.Contains("[友]"))
+                                if (supportCard.IsFriendCard)
                                 {
                                     priority = PartnerPriority.友人;
                                 }
@@ -731,17 +724,11 @@ namespace OldScenarioAnalyzer
                     .GroupBy(x => x.item_id))
                 {
                     if (k == 5) k = 0;
-                    var name = Database.ClimaxItem[j.First().item_id];
-                    if (name.Contains("+15") ||
-                        name.Contains("体力+") ||
-                        (name == "苦茶" && shouldPromoteTea) ||
-                        name == "BBQ" ||
-                        name == "切者" ||
-                        name == "哨子" ||
-                        name == "60%喇叭" ||
-                        name == "御守" ||
-                        name == "蹄铁・極"
-                        )
+                    var itemId = j.First().item_id;
+                    var name = Database.ClimaxItem[itemId];
+                    if (itemId is >= 1201 and <= 1205 or >= 2001 and <= 2003
+                        or 3101 or 4004 or 7001 or 8003 or 10001 or 11002
+                        || itemId == 2101 && shouldPromoteTea)
                         name = $"*{name}";
                     var itemCount = j.Count();
                     var remainTurn = j.First().limit_turn == 0 ? ((currentTurn - 1) / 6 + 1) * 6 + 1 - currentTurn : j.First().limit_turn + 1 - currentTurn;
