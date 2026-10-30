@@ -1,5 +1,7 @@
 # OldScenarioAnalyzer
 
+本插件已停止维护。
+
 解析种田杯以前剧本的回合训练信息。
 
 ## History
